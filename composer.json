@@ -17,7 +17,8 @@
     ],
     "require": {
         "elliotsawyer/silverstripe-typesense": "^0.0.7",
-        "nswdpc/silverstripe-typesense-forms": "*",
+        "typesense/typesense-php": "^4.9",
+        "nswdpc/silverstripe-search-forms": "*",
         "silverstripe/cms" : "^5"
     },
     "require-dev": {
