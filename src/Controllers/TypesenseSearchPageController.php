@@ -2,7 +2,7 @@
 
 namespace NSWDPC\Typesense\CMS\Controllers;
 
-use NSWDPC\Typesense\Forms\TypesenseSearchForm;
+use NSWDPC\SearchForms\Forms\SearchForm as TypesenseSearchForm;
 use ElliotSawyer\SilverstripeTypesense\Collection;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
