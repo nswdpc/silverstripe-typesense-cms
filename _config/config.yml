@@ -1,0 +1,12 @@
+---
+Name: nswdpc-typesense-cms
+---
+ElliotSawyer\SilverstripeTypesense\Typesense:
+  collections:
+    SilverStripe\CMS\Model\SiteTree:
+      name: Pages
+      fields:
+        - { name: Title, type: string, sort: true }
+        - { name: MenuTitle, type: string, sort: true }
+        - { name: Content, type: string, optional: true }
+        - { name: Link, type: string, index: false, optional: true}

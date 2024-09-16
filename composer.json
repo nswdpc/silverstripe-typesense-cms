@@ -1,0 +1,34 @@
+{
+    "name": "nswdpc/silverstripe-typesense-cms",
+    "description": "Typesense integration for the Silverstripe CMS module",
+    "type": "silverstripe-vendormodule",
+    "keywords": [
+        "silverstripe",
+        "typesense",
+        "cms",
+        "search"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "James",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "elliotsawyer/silverstripe-typesense": "^0.0.7",
+        "nswdpc/silverstripe-typesense-forms": "*",
+        "silverstripe/cms" : "^5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^3"
+    },
+    "autoload": {
+        "psr-4": {
+            "NSWDPC\\Typesense\\CMS\\": [
+                "src/"
+            ]
+        }
+    }
+}
