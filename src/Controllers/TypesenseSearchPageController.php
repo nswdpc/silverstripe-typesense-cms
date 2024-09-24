@@ -84,7 +84,8 @@ class TypesenseSearchPageController extends \PageController {
      */
     protected function renderResult(ArrayData $templateData): \SilverStripe\ORM\FieldType\DBHTMLText {
         $result = $this->customise([
-            'Layout' => $this->customise($templateData)->renderWith([TypesenseSearchPage::class])
+            'Layout' => $this->customise($templateData)
+                ->renderWith(['NSWDPC/Typesense/CMS/Models/Layout/TypesenseSearchPage'])
         ])->renderWith([\Page::class]);
         return $result;
     }
