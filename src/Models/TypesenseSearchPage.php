@@ -35,6 +35,22 @@ class TypesenseSearchPage extends \Page {
     }
 
     /**
+     * Return the title with the linked collection
+     */
+    public function TitleWithCollection(): string {
+        $title = $this->MenuTitle ?? '';
+        $collection = $this->Collection();
+        return _t(
+            self::class . ".TITLE_WITH_COLLECTION",
+            "{title} - using collection '{collection}'",
+            [
+                'title' => $title,
+                'collection' => $collection->Name ?? ''
+            ]
+        );
+    }
+
+    /**
      * Return the search fields
      */
     public function getAvailableSearchFields(): array {

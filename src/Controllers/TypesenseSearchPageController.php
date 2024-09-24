@@ -2,9 +2,11 @@
 
 namespace NSWDPC\Typesense\CMS\Controllers;
 
-use NSWDPC\SearchForms\Forms\AdvancedSearchForm;
-use NSWDPC\SearchForms\Forms\SearchForm;
+use NSWDPC\Search\Forms\Forms\AdvancedSearchForm;
+use NSWDPC\Search\Forms\Forms\SearchForm;
 use NSWDPC\Typesense\CMS\Models\TypesenseSearchPage;
+use NSWDPC\Search\Typesense\Services\FormCreator;
+use NSWDPC\Search\Typesense\Services\SearchHandler;
 use ElliotSawyer\SilverstripeTypesense\Collection;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -36,44 +38,14 @@ class TypesenseSearchPageController extends \PageController {
     /**
      * Return the search form
      */
-    public function SearchForm(): SearchForm|AdvancedSearchForm {
+    public function SearchForm(): SearchForm|AdvancedSearchForm|null {
         $model  = $this->data();
-        if($model->hasField('UseAdvancedSearch') && $model->UseAdvancedSearch == 1) {
-            // TODO: add fields as per configuration of collection
-            return AdvancedSearchForm::create(
-                $this,
-                'SearchForm',
-                FieldList::create(
-                    TextField::create(
-                        'Search',
-                        'Term'
-                    )
-                ),
-                FieldList::create(
-                    FormAction::create(
-                        'doSearch',
-                        'Search'
-                    )
-                )
-            );
-        } else {
-            return SearchForm::create(
-                $this,
-                'SearchForm',
-                FieldList::create(
-                    TextField::create(
-                        'Search',
-                        'Term'
-                    )
-                ),
-                FieldList::create(
-                    FormAction::create(
-                        'doSearch',
-                        'Search'
-                    )
-                )
-            );
+        $collection = $model->Collection();
+        if(!$collection) {
+            return null;
         }
+        $useAdvancedSearch = $model->hasField('UseAdvancedSearch') && $model->UseAdvancedSearch == 1;
+        return FormCreator::createForCollection($this, $collection, "SearchForm", $useAdvancedSearch);
     }
 
     /**
@@ -81,12 +53,30 @@ class TypesenseSearchPageController extends \PageController {
      */
     public function doSearch(array $data, Form $form): \SilverStripe\Control\HTTPResponse
     {
-        $term = $data['q'] ?? '';
-        if($term === '') {
-            $term = $data['Search'] ?? '';
-        }
+        $term = $data['Search'] ?? '';
         $term = strip_tags(trim((string)$term));
         return $this->redirect( $this->Link('?q=' . $term));
+    }
+
+    /**
+     * Results, currently only against one collection
+     */
+    public function index(HTTPRequest $request) {
+        $term = trim((string)$request->getVar('q') ?? '');
+        if($term === '') {
+            return $this->renderResult(ArrayData::create());
+        }
+        $handler = SearchHandler::create();
+        $model  = $this->data();
+        $collection = $model->Collection();
+        $results = null;
+        if($collection) {
+            $results = $handler->doSearch($collection, $term);
+        }
+        $templateData = ArrayData::create([
+            'Results' => $results
+        ]);
+        return $this->renderResult($templateData);
     }
 
     /**
@@ -97,51 +87,6 @@ class TypesenseSearchPageController extends \PageController {
             'Layout' => $this->customise($templateData)->renderWith([TypesenseSearchPage::class])
         ])->renderWith([\Page::class]);
         return $result;
-    }
-
-    /**
-     * Results, currently only against one collection
-     */
-    public function index(HTTPRequest $request) {
-        $term = trim((string)$request->getVar('q') ?? '');
-
-        if($term === '') {
-            return $this->renderResult(ArrayData::create());
-        }
-
-        $client = \ElliotSawyer\SilverstripeTypesense\Typesense::client();
-        $collectionName = '';
-        $model = $this->data();
-        $collection = $model->Collection();
-        if($collection instanceof Collection) {
-            $collectionName = (string)$collection->Name;
-        }
-        $results = ArrayList::create();
-        if($collectionName === '') {
-            return $this->renderResult(ArrayData::create());
-        }
-
-        $fieldsForSearch = $model->getFieldsForSearch();
-        if($fieldsForSearch === []) {
-            return $this->renderResult(ArrayData::create());
-        }
-
-        $searchParameters = [
-            'q' => $term,
-            'query_by' => implode(",", $fieldsForSearch)
-        ];
-        $search = $client->collections[$collectionName]->documents->search($searchParameters);
-        foreach($search['hits'] as $hit) {
-            $result = [];
-            $result = array_merge($result, (array)$hit['document']);
-            $results->push(
-                ArrayData::create($result)
-            );
-        }
-        $templateData = ArrayData::create([
-            'Results' => $results
-        ]);
-        return $this->renderResult($templateData);
     }
 
 }
