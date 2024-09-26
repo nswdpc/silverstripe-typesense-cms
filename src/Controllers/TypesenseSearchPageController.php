@@ -64,7 +64,8 @@ class TypesenseSearchPageController extends \PageController {
     public function index(HTTPRequest $request) {
         $term = trim((string)$request->getVar('q') ?? '');
         if($term === '') {
-            return $this->renderResult(ArrayData::create());
+            // no search taking place
+            return $this->renderSearchResults(ArrayData::create());
         }
         $handler = SearchHandler::create();
         $model  = $this->data();
@@ -74,19 +75,20 @@ class TypesenseSearchPageController extends \PageController {
             $results = $handler->doSearch($collection, $term);
         }
         $templateData = ArrayData::create([
-            'Results' => $results
+            'Results' => $results, // all results as an ArrayList
+            'SearchQuery' => $term
         ]);
-        return $this->renderResult($templateData);
+        return $this->renderSearchResults($templateData);
     }
 
     /**
      * Return the result page using the defined layout and template data provided
      */
-    protected function renderResult(ArrayData $templateData): \SilverStripe\ORM\FieldType\DBHTMLText {
+    protected function renderSearchResults(ArrayData $templateData): \SilverStripe\ORM\FieldType\DBHTMLText {
         $result = $this->customise([
             'Layout' => $this->customise($templateData)
                 ->renderWith(['NSWDPC/Typesense/CMS/Models/Layout/TypesenseSearchPage'])
-        ])->renderWith([\Page::class]);
+        ])->renderWith([\TypesenseSearchPage::class, \Page::class]);// with these templates
         return $result;
     }
 
