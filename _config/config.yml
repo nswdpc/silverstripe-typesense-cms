@@ -4,7 +4,7 @@ Name: nswdpc-typesense-cms
 ElliotSawyer\SilverstripeTypesense\Typesense:
   collections:
     SilverStripe\CMS\Model\SiteTree:
-      name: Pages
+      name: 'Pages (default)'
       fields:
         - { name: Title, type: string, sort: true }
         - { name: MenuTitle, type: string, sort: true }
