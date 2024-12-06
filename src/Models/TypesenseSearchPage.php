@@ -8,6 +8,7 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DB;
 
 /**
  * Typesense search page
@@ -26,7 +27,13 @@ class TypesenseSearchPage extends \Page {
 
     private static array $db = [
         'SearchFields' => 'Text', // further restrict search fields for this search
-        'UseAdvancedSearch' => 'Boolean' // trigger advanced search
+        'UseAdvancedSearch' => 'Boolean', // trigger advanced search
+        'IsGlobalSearch' => 'Boolean' // whether to use this page as the global search
+    ];
+
+
+    private static array $indexes = [
+        'IsGlobalSearch' => true
     ];
 
     public function getControllerName()
@@ -93,6 +100,10 @@ class TypesenseSearchPage extends \Page {
             'Root.Typesense',
             [
                 CheckboxField::create(
+                    'IsGlobalSearch',
+                    _t(self::class . '.IS_GLOBAL_SEARCH', 'Use as site-wide search'),
+                ),
+                CheckboxField::create(
                     'UseAdvancedSearch',
                     _t(self::class . '.USE_ADVANCED_SEARCH', 'Use an advanced search form'),
                 ),
@@ -125,6 +136,16 @@ class TypesenseSearchPage extends \Page {
         if($this->isInDB() && $this->isChanged('CollectionID', DataObject::CHANGE_VALUE)) {
             // if the collection changes, remove the search fields
             $this->SearchFields = '';
+        }
+    }
+
+    /**
+     * Handle post-writing
+     */
+    public function onAfterWrite() {
+        parent::onAfterWrite();
+        if($this->IsGlobalSearch == 1) {
+            DB::prepared_query("UPDATE \"TypesenseSearchPage\" SET IsGlobalSearch = 0 WHERE ID <> ?", [$this->ID]);
         }
     }
 

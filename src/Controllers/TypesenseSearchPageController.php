@@ -62,7 +62,18 @@ class TypesenseSearchPageController extends \PageController {
      * Results, currently only against one collection
      */
     public function index(HTTPRequest $request) {
-        $term = trim((string)$request->getVar('q') ?? '');
+        // handle incoming  'Search'  query (BC)
+        $getVars = $request->getVars();
+        $search = trim($getVars['Search'] ?? '');
+        if($search !== '') {
+            // Ensure using  'q' search term
+            $query = $getVars;
+            $query['q'] = $search;
+            unset($query['Search']);
+            return $this->redirect( $this->Link('?' . http_build_query($query)));
+        }
+
+        $term = trim(strip_tags($request->getVar('q') ?? ''));
         if($term === '') {
             // no search taking place
             return $this->renderSearchResults(ArrayData::create());
