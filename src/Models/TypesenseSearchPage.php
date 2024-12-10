@@ -3,10 +3,12 @@
 namespace NSWDPC\Typesense\CMS\Models;
 
 use ElliotSawyer\SilverstripeTypesense\Collection;
+use NSWDPC\Search\Typesense\Services\SearchHandler;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ListboxField;
+use SilverStripe\Forms\NumericField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 
@@ -28,12 +30,16 @@ class TypesenseSearchPage extends \Page {
     private static array $db = [
         'SearchFields' => 'Text', // further restrict search fields for this search
         'UseAdvancedSearch' => 'Boolean', // trigger advanced search
-        'IsGlobalSearch' => 'Boolean' // whether to use this page as the global search
+        'IsGlobalSearch' => 'Boolean', // whether to use this page as the global search
+        'ResultsPerPage' => 'Int' // if provided, the number of results per page, if not set, no pagination
     ];
-
 
     private static array $indexes = [
         'IsGlobalSearch' => true
+    ];
+
+    private static array $defaults = [
+        'ResultsPerPage' => 10
     ];
 
     public function getControllerName()
@@ -107,6 +113,21 @@ class TypesenseSearchPage extends \Page {
                     'UseAdvancedSearch',
                     _t(self::class . '.USE_ADVANCED_SEARCH', 'Use an advanced search form'),
                 ),
+                NumericField::create(
+                    'ResultsPerPage',
+                    _t(self::class . '.RESULTS_PER_PAGE', 'Results per page')
+                )->setAttribute('max', SearchHandler::MAX_PER_PAGE)
+                ->setAttribute('min', 0)
+                ->setHtml5(true)
+                ->setDescription(
+                    _t(
+                        self::class . '.RESULTS_PER_PAGE_HINT',
+                        'Maximum: {num}',
+                        [
+                            'num' => SearchHandler::MAX_PER_PAGE
+                        ]
+                    )
+                ),
                 DropdownField::create(
                     'CollectionID',
                     _t(self::class . '.COLLECTION', 'Collection'),
@@ -133,6 +154,11 @@ class TypesenseSearchPage extends \Page {
      */
     public function onBeforeWrite() {
         parent::onBeforeWrite();
+        if($this->ResultsPerPage > SearchHandler::MAX_PER_PAGE) {
+            $this->ResultsPerPage = SearchHandler::MAX_PER_PAGE;
+        } else if($this->ResultsPerPage <= 0) {
+            $this->ResultsPerPage = SearchHandler::DEFAULT_PER_PAGE;
+        }
         if($this->isInDB() && $this->isChanged('CollectionID', DataObject::CHANGE_VALUE)) {
             // if the collection changes, remove the search fields
             $this->SearchFields = '';

@@ -15,6 +15,7 @@ use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\PaginatedList;
 use SilverStripe\View\ArrayData;
 
 
@@ -78,15 +79,17 @@ class TypesenseSearchPageController extends \PageController {
             // no search taking place
             return $this->renderSearchResults(ArrayData::create());
         }
-        $handler = SearchHandler::create();
-        $model  = $this->data();
+        $model = $this->data();
         $collection = $model->Collection();
-        $results = null;
+        $paginatedList = null;
         if($collection) {
-            $results = $handler->doSearch($collection, $term);
+            $handler = SearchHandler::create('start');
+            $perPage = $model->ResultsPerPage ?? SearchHandler::DEFAULT_PER_PAGE;
+            $pageStart = $request->getVar($handler->getStartVarName()) ?? 0;
+            $paginatedList = $handler->doSearch($collection, $term, $pageStart, $perPage);
         }
         $templateData = ArrayData::create([
-            'Results' => $results, // all results as an ArrayList
+            'Results' => $paginatedList, // results as an PaginatedList or null
             'SearchQuery' => $term
         ]);
         return $this->renderSearchResults($templateData);
