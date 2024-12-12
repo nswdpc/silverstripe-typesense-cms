@@ -4,6 +4,7 @@ Name: nswdpc-typesense-cms
 SilverStripe\CMS\Model\SiteTree:
   extensions:
     TypesenseSearchData: NSWDPC\Typesense\CMS\Extensions\SiteTreeSearchResult
+    RecordChangeHandler: NSWDPC\Search\Typesense\Extensions\RecordChangeHandler
 ElliotSawyer\SilverstripeTypesense\Typesense:
   collections:
     SilverStripe\CMS\Model\SiteTree:
