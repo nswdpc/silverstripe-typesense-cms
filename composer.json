@@ -16,7 +16,9 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "*"
+        "nswdpc/silverstripe-search-typesense": "*",
+        "silverstripe/tagfield": "*",
+        "silverstripe/asset-admin": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
