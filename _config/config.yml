@@ -14,3 +14,7 @@ ElliotSawyer\SilverstripeTypesense\Typesense:
         - { name: MenuTitle, type: string, sort: true }
         - { name: Content, type: string, optional: true }
         - { name: Link, type: string, index: false, optional: true}
+NSWDPC\Typesense\CMS\Models\TypesenseSearchPage:
+  extensions:
+    # scoped search support
+    - 'NSWDPC\Search\Typesense\Extensions\SearchScope'

@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "*",
+        "nswdpc/silverstripe-search-typesense": "dev-feat-instantsearch",
         "silverstripe/tagfield": "*",
         "silverstripe/asset-admin": "*"
     },

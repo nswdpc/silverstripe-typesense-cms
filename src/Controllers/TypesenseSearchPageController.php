@@ -5,7 +5,9 @@ namespace NSWDPC\Typesense\CMS\Controllers;
 use NSWDPC\Search\Forms\Forms\AdvancedSearchForm;
 use NSWDPC\Search\Forms\Forms\SearchForm;
 use NSWDPC\Typesense\CMS\Models\TypesenseSearchPage;
+use NSWDPC\Search\Typesense\Extensions\SearchScope;
 use NSWDPC\Search\Typesense\Services\FormCreator;
+use NSWDPC\Search\Typesense\Services\Logger;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
 use ElliotSawyer\SilverstripeTypesense\Collection;
 use SilverStripe\Control\HTTPRequest;
@@ -83,10 +85,17 @@ class TypesenseSearchPageController extends \PageController {
         $collection = $model->Collection();
         $paginatedList = null;
         if($collection) {
-            $handler = SearchHandler::create('start');
-            $perPage = $model->ResultsPerPage ?? SearchHandler::DEFAULT_PER_PAGE;
-            $pageStart = $request->getVar($handler->getStartVarName()) ?? 0;
-            $paginatedList = $handler->doSearch($collection, $term, $pageStart, $perPage);
+            try {
+                $handler = SearchHandler::create('start');
+                $perPage = $model->ResultsPerPage ?? SearchHandler::DEFAULT_PER_PAGE;
+                $pageStart = $request->getVar($handler->getStartVarName()) ?? 0;
+                $searchScope = SearchScope::getDecodedSearchScope($model->SearchScope ?? '');
+                $paginatedList = $handler->doSearch($collection, $term, $pageStart, $perPage, $searchScope);
+            } catch (\Typesense\Exceptions\TypesenseClientError $typesenseClientError) {
+                Logger::log("TypesenseClientError " . $typesenseClientError->getMessage() . " of type: " . get_class($typesenseClientError), "NOTICE");
+            } catch (\Exception $exception) {
+                Logger::log("General Exception searching with typesense: " . $exception->getMessage(), "NOTICE");
+            }
         }
         $templateData = ArrayData::create([
             'Results' => $paginatedList, // results as an PaginatedList or null
