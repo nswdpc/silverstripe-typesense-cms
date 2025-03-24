@@ -3,8 +3,8 @@
 namespace NSWDPC\Typesense\CMS\Models;
 
 use ElliotSawyer\SilverstripeTypesense\Collection;
-use NSWDPC\Search\Typesense\Extensions\SearchScope;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
+use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
@@ -105,8 +105,8 @@ class TypesenseSearchPage extends \Page {
                 ->setRightTitle(
                     _t(self::class . '.COLLECTION_FIELD_CHANGE_WARNING', 'When you change the collection, the search scope will need to be reviewed.'),
                 ),
-                SearchScope::getSearchKeyField(),
-                SearchScope::getSearchScopeField()
+                ScopedSearch::getSearchKeyField(),
+                ScopedSearch::getSearchScopeField()
             ]
         );
         return $fields;

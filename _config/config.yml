@@ -17,4 +17,4 @@ ElliotSawyer\SilverstripeTypesense\Typesense:
 NSWDPC\Typesense\CMS\Models\TypesenseSearchPage:
   extensions:
     # scoped search support
-    - 'NSWDPC\Search\Typesense\Extensions\SearchScope'
+    - 'NSWDPC\Search\Typesense\Extensions\ScopedSearchExtension'
