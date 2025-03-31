@@ -4,6 +4,7 @@ namespace NSWDPC\Typesense\CMS\Models;
 
 use ElliotSawyer\SilverstripeTypesense\Collection;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
+use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
@@ -28,7 +29,6 @@ class TypesenseSearchPage extends \Page {
     ];
 
     private static array $db = [
-        'SearchFields' => 'Text', // further restrict search fields for this search
         'UseAdvancedSearch' => 'Boolean', // trigger advanced search
         'IsGlobalSearch' => 'Boolean', // whether to use this page as the global search
         'ResultsPerPage' => 'Int' // if provided, the number of results per page, if not set, no pagination
@@ -61,40 +61,6 @@ class TypesenseSearchPage extends \Page {
                 'collection' => $collection->Name ?? ''
             ]
         );
-    }
-
-    /**
-     * Return the search fields
-     */
-    public function getAvailableSearchFields(): array {
-        $collection = $this->Collection();
-        $fields = [];
-        if($collection instanceof Collection) {
-            $fields = $collection->Fields()
-                ->filter(['type' => ['string','string[]']]) // only search on these types for now
-                ->map('name','name')
-                ->toArray();
-        }
-        return $fields;
-    }
-
-    /**
-     * If fields are selected, get them, otherwise return all fields in the collection
-     */
-    public function getFieldsForSearch(): array {
-        $fields = [];
-        try {
-            $fields = json_decode($this->SearchFields, true, 512, JSON_THROW_ON_ERROR);
-            if(!is_array($fields)) {
-                $fields = [];
-            }
-        } catch(\Exception $e) {
-
-        }
-        if($fields === []) {
-            $fields = array_values($this->getAvailableSearchFields());
-        }
-        return array_filter($fields);
     }
 
     /**
@@ -137,13 +103,10 @@ class TypesenseSearchPage extends \Page {
                     _t(self::class . '.COLLECTION_FIELD_DESCRIPTION', 'Select a collection to search in'),
                 )
                 ->setRightTitle(
-                    _t(self::class . '.COLLECTION_FIELD_CHANGE_WARNING', 'When you change the collection, the fields below will be cleared. Choose the fields to search in after saving.'),
+                    _t(self::class . '.COLLECTION_FIELD_CHANGE_WARNING', 'When you change the collection, the search scope will need to be reviewed.'),
                 ),
-                ListboxField::create(
-                    'SearchFields',
-                    _t(self::class . '.FIELDS_TO_SEARCH_IN', 'Fields to search in'),
-                    $this->getAvailableSearchFields()
-                )
+                ScopedSearch::getSearchKeyField(),
+                ScopedSearch::getSearchScopeField()
             ]
         );
         return $fields;
@@ -158,10 +121,6 @@ class TypesenseSearchPage extends \Page {
             $this->ResultsPerPage = SearchHandler::MAX_PER_PAGE;
         } else if($this->ResultsPerPage <= 0) {
             $this->ResultsPerPage = SearchHandler::DEFAULT_PER_PAGE;
-        }
-        if($this->isInDB() && $this->isChanged('CollectionID', DataObject::CHANGE_VALUE)) {
-            // if the collection changes, remove the search fields
-            $this->SearchFields = '';
         }
     }
 
