@@ -15,7 +15,23 @@
             "role": "Developer"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:nswdpc/silverstripe-search-typesense.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:nswdpc/silverstripe-search-forms.git"
+        }
+    ],
     "require": {
+        "cambis/silverstan": "^2",
+        "cambis/silverstripe-rector": "^2",
+        "friendsofphp/php-cs-fixer": "^3",
+        "nswdpc/ci-files": "dev-v-4",
+        "phpstan/phpstan": "^2",
+        "rector/rector": "^2",
         "nswdpc/silverstripe-search-typesense": "^0.2",
         "silverstripe/tagfield": "*",
         "silverstripe/asset-admin": "*"
@@ -29,6 +45,20 @@
             "NSWDPC\\Typesense\\CMS\\": [
                 "src/"
             ]
+        }
+    },
+    "scripts": {
+        "phpstan-analyse": "./vendor/bin/phpstan analyse --ansi --no-progress --no-interaction --configuration vendor/nswdpc/ci-files/phpstan/.phpstan.silverstripe.neon src/",
+        "rector-dryrun": "./vendor/bin/rector process --dry-run --ansi --config vendor/nswdpc/ci-files/rector/.rector.silverstripe_53_83.php src/ tests/*.php",
+        "rector-process": "./vendor/bin/rector process --no-diffs --ansi --config vendor/nswdpc/ci-files/rector/.rector.silverstripe_53_83.php src/ tests/*.php",
+        "phpcsfixer-fix": "./vendor/bin/php-cs-fixer fix --ansi --no-interaction --config vendor/nswdpc/ci-files/php-cs-fixer/.php-cs-fixer.php src/ tests/*.php"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "silverstripe/recipe-plugin": true,
+            "php-http/discovery": true,
+            "silverstripe/vendor-plugin": true
         }
     }
 }
