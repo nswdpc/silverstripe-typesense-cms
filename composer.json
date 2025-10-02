@@ -18,26 +18,22 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@github.com:nswdpc/silverstripe-search-typesense.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:nswdpc/silverstripe-search-forms.git"
+            "url": "https://codeberg.org/codemdev/silverstripe-typesense.git"
         }
     ],
     "require": {
+        "nswdpc/silverstripe-search-typesense": "dev-dev-stan-modules as 0.2.9999",
+        "silverstripe/tagfield": "*",
+        "silverstripe/asset-admin": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
         "cambis/silverstan": "^2",
         "cambis/silverstripe-rector": "^2",
         "friendsofphp/php-cs-fixer": "^3",
         "nswdpc/ci-files": "dev-v-4",
         "phpstan/phpstan": "^2",
         "rector/rector": "^2",
-        "nswdpc/silverstripe-search-typesense": "^0.2",
-        "silverstripe/tagfield": "*",
-        "silverstripe/asset-admin": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5",
         "friendsofphp/php-cs-fixer": "^3"
     },
     "autoload": {
@@ -60,5 +56,7 @@
             "php-http/discovery": true,
             "silverstripe/vendor-plugin": true
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
