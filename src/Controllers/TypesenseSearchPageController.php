@@ -114,7 +114,6 @@ class TypesenseSearchPageController extends \PageController
         return $this->customise([
             'Layout' => $this->customise($templateData)
                 ->renderWith(['NSWDPC/Typesense/CMS/Models/Layout/TypesenseSearchPage'])
-        ])->renderWith([\TypesenseSearchPage::class, \Page::class]);
+        ])->renderWith([\NSWDPC\Typesense\CMS\Models\TypesenseSearchPage::class, \Page::class]);
     }
-
 }
