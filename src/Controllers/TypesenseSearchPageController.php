@@ -23,10 +23,11 @@ use SilverStripe\View\ArrayData;
 
 /**
  * Typesense search page controller
+ * @extends \PageController<\NSWDPC\Typesense\CMS\Models\TypesenseSearchPage>
  */
 class TypesenseSearchPageController extends \PageController {
 
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'Form',
         'SearchForm'
     ];
@@ -47,6 +48,7 @@ class TypesenseSearchPageController extends \PageController {
         if(!$collection) {
             return null;
         }
+
         $useAdvancedSearch = $model->hasField('UseAdvancedSearch') && $model->UseAdvancedSearch == 1;
         return FormCreator::createForCollection($this, $collection, "SearchForm", $useAdvancedSearch);
     }
@@ -64,7 +66,7 @@ class TypesenseSearchPageController extends \PageController {
     /**
      * Results, currently only against one collection
      */
-    public function index(HTTPRequest $request) {
+    public function index(HTTPRequest $request): \SilverStripe\Control\HTTPResponse|\SilverStripe\ORM\FieldType\DBHTMLText {
         // handle incoming  'Search'  query (BC)
         $getVars = $request->getVars();
         $search = trim($getVars['Search'] ?? '');
@@ -81,6 +83,7 @@ class TypesenseSearchPageController extends \PageController {
             // no search taking place
             return $this->renderSearchResults(ArrayData::create());
         }
+
         $model = $this->data();
         $collection = $model->Collection();
         $paginatedList = null;
@@ -93,11 +96,12 @@ class TypesenseSearchPageController extends \PageController {
                 $searchKey = $model->SearchKey ?? '';
                 $paginatedList = $handler->doSearch($collection, $term, $pageStart, $perPage, $searchScope, $searchKey);
             } catch (\Typesense\Exceptions\TypesenseClientError $typesenseClientError) {
-                Logger::log("TypesenseClientError " . $typesenseClientError->getMessage() . " of type: " . get_class($typesenseClientError), "NOTICE");
+                Logger::log("TypesenseClientError " . $typesenseClientError->getMessage() . " of type: " . $typesenseClientError::class, "NOTICE");
             } catch (\Exception $exception) {
                 Logger::log("General Exception searching with typesense: " . $exception->getMessage(), "NOTICE");
             }
         }
+
         $templateData = ArrayData::create([
             'Results' => $paginatedList, // results as an PaginatedList or null
             'SearchQuery' => $term
@@ -109,11 +113,11 @@ class TypesenseSearchPageController extends \PageController {
      * Return the result page using the defined layout and template data provided
      */
     protected function renderSearchResults(ArrayData $templateData): \SilverStripe\ORM\FieldType\DBHTMLText {
-        $result = $this->customise([
+        // with these templates
+        return $this->customise([
             'Layout' => $this->customise($templateData)
                 ->renderWith(['NSWDPC/Typesense/CMS/Models/Layout/TypesenseSearchPage'])
-        ])->renderWith([\TypesenseSearchPage::class, \Page::class]);// with these templates
-        return $result;
+        ])->renderWith([\TypesenseSearchPage::class, \Page::class]);
     }
 
 }

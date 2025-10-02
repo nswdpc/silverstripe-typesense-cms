@@ -17,6 +17,12 @@ use SilverStripe\TagField\StringTagField;
 
 /**
  * Provides Typesense search result support for the SiteTree data model
+ * @property ?string $SearchResultSubTitle
+ * @property ?string $SearchResultLabel
+ * @property ?string $SearchResultLabels
+ * @property int $SearchResultImageID
+ * @method \SilverStripe\Assets\Image SearchResultImage()
+ * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\CMS\Model\SiteTree & static)>
  */
 class SiteTreeSearchResult extends DataExtension {
 
@@ -90,12 +96,12 @@ class SiteTreeSearchResult extends DataExtension {
         $supportsElemental = class_exists(ElementalPageExtension::class) && $owner->supportsElemental();
 
         // try to determine the search abstract
-        if($owner->hasMethod('getSearchResultAbstract')) {
+        if ($owner->hasMethod('getSearchResultAbstract')) {
             $abstract = (string)$owner->getSearchResultAbstract();
-        } else if($owner->hasField('Abstract')) {
+        } elseif ($owner->hasField('Abstract')) {
             // maybe the model provides a search abstract
             $abstract = $owner->dbObject('Abstract');
-        } else if($supportsElemental) {
+        } elseif ($supportsElemental) {
             // if elemental is supported
             $abstract = DBField::create_field(
                 DBHTMLText::class,
@@ -108,6 +114,7 @@ class SiteTreeSearchResult extends DataExtension {
             if($content instanceof DBHTMLText) {
                 $content = $content->setProcessShortcodes(false);
             }
+
             $content = $content->FirstSentence();
         }
 
@@ -127,7 +134,7 @@ class SiteTreeSearchResult extends DataExtension {
             'ImageAlt' => $imageAlt,
             'Label' => $owner->SearchResultLabel ?? '',
             'Labels' => explode(",", $owner->SearchResultLabels ?? ''),
-            'Abstract' => strip_tags(trim($abstract)),
+            'Abstract' => strip_tags(trim((string) $abstract)),
             'Info' => $this->SearchResultSubTitle ?? ''
         ];
 

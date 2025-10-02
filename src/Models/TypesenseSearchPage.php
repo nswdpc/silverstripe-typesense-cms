@@ -15,6 +15,12 @@ use SilverStripe\ORM\DB;
 
 /**
  * Typesense search page
+ * @property bool $UseAdvancedSearch
+ * @property bool $IsGlobalSearch
+ * @property int $ResultsPerPage
+ * @property int $CollectionID
+ * @method \ElliotSawyer\SilverstripeTypesense\Collection Collection()
+ * @mixin \NSWDPC\Search\Typesense\Extensions\ScopedSearchExtension
  */
 class TypesenseSearchPage extends \Page {
 
@@ -42,6 +48,7 @@ class TypesenseSearchPage extends \Page {
         'ResultsPerPage' => 10
     ];
 
+    #[\Override]
     public function getControllerName()
     {
         return TypesenseSearchPageController::class;
@@ -66,6 +73,7 @@ class TypesenseSearchPage extends \Page {
     /**
      * Return CMS fields with typesense configuration fields
      */
+    #[\Override]
     public function getCmsFields() {
         $fields = parent::getCmsFields();
         $fields->addFieldsToTab(
@@ -115,11 +123,12 @@ class TypesenseSearchPage extends \Page {
     /**
      * Handle writing
      */
+    #[\Override]
     public function onBeforeWrite() {
         parent::onBeforeWrite();
-        if($this->ResultsPerPage > SearchHandler::MAX_PER_PAGE) {
+        if ($this->ResultsPerPage > SearchHandler::MAX_PER_PAGE) {
             $this->ResultsPerPage = SearchHandler::MAX_PER_PAGE;
-        } else if($this->ResultsPerPage <= 0) {
+        } elseif ($this->ResultsPerPage <= 0) {
             $this->ResultsPerPage = SearchHandler::DEFAULT_PER_PAGE;
         }
     }
@@ -127,10 +136,11 @@ class TypesenseSearchPage extends \Page {
     /**
      * Handle post-writing
      */
+    #[\Override]
     public function onAfterWrite() {
         parent::onAfterWrite();
         if($this->IsGlobalSearch == 1) {
-            DB::prepared_query("UPDATE \"TypesenseSearchPage\" SET IsGlobalSearch = 0 WHERE ID <> ?", [$this->ID]);
+            DB::prepared_query('UPDATE "TypesenseSearchPage" SET IsGlobalSearch = 0 WHERE ID <> ?', [$this->ID]);
         }
     }
 

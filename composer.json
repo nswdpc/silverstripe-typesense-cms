@@ -55,7 +55,8 @@
             "composer/installers": true,
             "silverstripe/recipe-plugin": true,
             "php-http/discovery": true,
-            "silverstripe/vendor-plugin": true
+            "silverstripe/vendor-plugin": true,
+            "phpstan/extension-installer": true
         }
     },
     "minimum-stability": "dev",
