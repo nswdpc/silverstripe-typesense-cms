@@ -12,7 +12,6 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
-use SilverStripe\ORM\FieldType\DBText;
 use SilverStripe\TagField\StringTagField;
 
 /**
@@ -24,8 +23,8 @@ use SilverStripe\TagField\StringTagField;
  * @method \SilverStripe\Assets\Image SearchResultImage()
  * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\CMS\Model\SiteTree & static)>
  */
-class SiteTreeSearchResult extends DataExtension {
-
+class SiteTreeSearchResult extends DataExtension
+{
     use TypesenseDefaultFields;
 
     private static array $db = [
@@ -83,13 +82,14 @@ class SiteTreeSearchResult extends DataExtension {
     /**
      * Create a Typesense search result for indexing
      */
-    public function getTypesenseSearchResult(): TypesenseSearchResult {
+    public function getTypesenseSearchResult(): TypesenseSearchResult
+    {
         $owner = $this->getOwner();
 
         // Allow custom project-level decoration of the search result
         $data = [];
         $owner->extend('beforeGetTypesenseSearchResult', $data);
-        if($data !== []) {
+        if ($data !== []) {
             return $data;
         }
 
@@ -111,7 +111,7 @@ class SiteTreeSearchResult extends DataExtension {
         } else {
             // use the first sentence of the content
             $content = $owner->dbObject('Content');
-            if($content instanceof DBHTMLText) {
+            if ($content instanceof DBHTMLText) {
                 $content = $content->setProcessShortcodes(false);
             }
 
@@ -121,7 +121,7 @@ class SiteTreeSearchResult extends DataExtension {
         // images, if provided
         $imageURL = '';
         $imageAlt = '';
-        if(($image = $owner->SearchResultImage()) && $image->exists()) {
+        if (($image = $owner->SearchResultImage()) && $image->exists()) {
             $imageURL = $image->Link();
             $imageAlt = $image->hasField('AltText') ? ($image->AltText ?? '') : '';
         }

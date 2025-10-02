@@ -8,9 +8,7 @@ use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 
 /**
@@ -22,8 +20,8 @@ use SilverStripe\ORM\DB;
  * @method \ElliotSawyer\SilverstripeTypesense\Collection Collection()
  * @mixin \NSWDPC\Search\Typesense\Extensions\ScopedSearchExtension
  */
-class TypesenseSearchPage extends \Page {
-
+class TypesenseSearchPage extends \Page
+{
     private static string $table_name = 'TypesenseSearchPage';
 
     private static string $singular_name = 'Typesense search page';
@@ -57,7 +55,8 @@ class TypesenseSearchPage extends \Page {
     /**
      * Return the title with the linked collection
      */
-    public function TitleWithCollection(): string {
+    public function TitleWithCollection(): string
+    {
         $title = $this->MenuTitle ?? '';
         $collection = $this->Collection();
         return _t(
@@ -74,7 +73,8 @@ class TypesenseSearchPage extends \Page {
      * Return CMS fields with typesense configuration fields
      */
     #[\Override]
-    public function getCmsFields() {
+    public function getCmsFields()
+    {
         $fields = parent::getCmsFields();
         $fields->addFieldsToTab(
             'Root.Typesense',
@@ -105,7 +105,7 @@ class TypesenseSearchPage extends \Page {
                 DropdownField::create(
                     'CollectionID',
                     _t(self::class . '.COLLECTION', 'Collection'),
-                    Collection::get()->sort('Name')->map('ID','Name')
+                    Collection::get()->sort('Name')->map('ID', 'Name')
                 )->setEmptyString('')
                 ->setDescription(
                     _t(self::class . '.COLLECTION_FIELD_DESCRIPTION', 'Select a collection to search in'),
@@ -124,7 +124,8 @@ class TypesenseSearchPage extends \Page {
      * Handle writing
      */
     #[\Override]
-    public function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
         if ($this->ResultsPerPage > SearchHandler::MAX_PER_PAGE) {
             $this->ResultsPerPage = SearchHandler::MAX_PER_PAGE;
@@ -137,9 +138,10 @@ class TypesenseSearchPage extends \Page {
      * Handle post-writing
      */
     #[\Override]
-    public function onAfterWrite() {
+    public function onAfterWrite()
+    {
         parent::onAfterWrite();
-        if($this->IsGlobalSearch == 1) {
+        if ($this->IsGlobalSearch == 1) {
             DB::prepared_query('UPDATE "TypesenseSearchPage" SET IsGlobalSearch = 0 WHERE ID <> ?', [$this->ID]);
         }
     }
