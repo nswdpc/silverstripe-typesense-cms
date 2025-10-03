@@ -94,6 +94,7 @@ class TypesenseSearchPageController extends \PageController
                     // no scope
                     $searchScope = [];
                 }
+
                 $searchKey = $model->getTypesenseSearchOnlyKey();
                 $paginatedList = $handler->doSearch($collection, $term, $pageStart, $perPage, $searchScope, $searchKey);
             } catch (\JsonException $jsonException) {
