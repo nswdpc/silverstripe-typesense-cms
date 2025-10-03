@@ -90,7 +90,7 @@ class TypesenseSearchPageController extends \PageController
                 $pageStart = $request->getVar($handler->getStartVarName()) ?? 0;
                 // an option search scope, provided as JSON
                 $searchScope = ScopedSearch::getDecodedSearchScope($model->SearchScope ?? '');
-                if(!is_array($searchScope)) {
+                if (!is_array($searchScope)) {
                     // no scope
                     $searchScope = [];
                 }
