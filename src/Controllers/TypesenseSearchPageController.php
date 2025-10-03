@@ -91,10 +91,12 @@ class TypesenseSearchPageController extends \PageController
                 $searchScope = ScopedSearch::getDecodedSearchScope($model->SearchScope ?? '');
                 $searchKey = $model->SearchKey ?? '';
                 $paginatedList = $handler->doSearch($collection, $term, $pageStart, $perPage, $searchScope, $searchKey);
+            } catch (\JsonException $jsonException) {
+                Logger::log("Typesense JsonException: " . $jsonException->getCode() . "/" . $jsonException->getMessage(), "NOTICE");
             } catch (\Typesense\Exceptions\TypesenseClientError $typesenseClientError) {
-                Logger::log("TypesenseClientError " . $typesenseClientError->getMessage() . " of type: " . $typesenseClientError::class, "NOTICE");
+                Logger::log("Typesense TypesenseClientError: " . $typesenseClientError->getMessage() . " of type: " . $typesenseClientError::class, "NOTICE");
             } catch (\Exception $exception) {
-                Logger::log("General Exception searching with typesense: " . $exception->getMessage(), "NOTICE");
+                Logger::log("Typesense Exception: " . $exception->getMessage(), "NOTICE");
             }
         }
 
