@@ -7,6 +7,7 @@ use NSWDPC\Search\Typesense\Services\SearchHandler;
 use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\ORM\DB;
@@ -113,8 +114,14 @@ class TypesenseSearchPage extends \Page
                 ->setRightTitle(
                     _t(self::class . '.COLLECTION_FIELD_CHANGE_WARNING', 'When you change the collection, the search scope will need to be reviewed.'),
                 ),
-                ScopedSearch::getSearchKeyField(),
-                ScopedSearch::getSearchScopeField()
+                CompositeField::create(
+                    [
+                        ScopedSearch::getSearchKeyField(),
+                        ScopedSearch::getSearchScopeField()
+                    ]
+                )->setTitle(
+                    _t(self::class . '.API_CONFIGURATION', 'API configuration'),
+                )
             ]
         );
         return $fields;
