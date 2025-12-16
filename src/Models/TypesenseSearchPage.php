@@ -7,17 +7,22 @@ use NSWDPC\Search\Typesense\Services\SearchHandler;
 use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 
 /**
  * Typesense search page
+ * @property bool $UseAdvancedSearch
+ * @property bool $IsGlobalSearch
+ * @property int $ResultsPerPage
+ * @property int $CollectionID
+ * @method \ElliotSawyer\SilverstripeTypesense\Collection Collection()
+ * @mixin \NSWDPC\Search\Typesense\Extensions\ScopedSearchExtension
  */
-class TypesenseSearchPage extends \Page {
-
+class TypesenseSearchPage extends \Page
+{
     private static string $table_name = 'TypesenseSearchPage';
 
     private static string $singular_name = 'Typesense search page';
@@ -42,6 +47,7 @@ class TypesenseSearchPage extends \Page {
         'ResultsPerPage' => 10
     ];
 
+    #[\Override]
     public function getControllerName()
     {
         return TypesenseSearchPageController::class;
@@ -50,7 +56,8 @@ class TypesenseSearchPage extends \Page {
     /**
      * Return the title with the linked collection
      */
-    public function TitleWithCollection(): string {
+    public function TitleWithCollection(): string
+    {
         $title = $this->MenuTitle ?? '';
         $collection = $this->Collection();
         return _t(
@@ -66,7 +73,9 @@ class TypesenseSearchPage extends \Page {
     /**
      * Return CMS fields with typesense configuration fields
      */
-    public function getCmsFields() {
+    #[\Override]
+    public function getCmsFields()
+    {
         $fields = parent::getCmsFields();
         $fields->addFieldsToTab(
             'Root.Typesense',
@@ -97,7 +106,7 @@ class TypesenseSearchPage extends \Page {
                 DropdownField::create(
                     'CollectionID',
                     _t(self::class . '.COLLECTION', 'Collection'),
-                    Collection::get()->sort('Name')->map('ID','Name')
+                    Collection::get()->sort('Name')->map('ID', 'Name')
                 )->setEmptyString('')
                 ->setDescription(
                     _t(self::class . '.COLLECTION_FIELD_DESCRIPTION', 'Select a collection to search in'),
@@ -105,8 +114,14 @@ class TypesenseSearchPage extends \Page {
                 ->setRightTitle(
                     _t(self::class . '.COLLECTION_FIELD_CHANGE_WARNING', 'When you change the collection, the search scope will need to be reviewed.'),
                 ),
-                ScopedSearch::getSearchKeyField(),
-                ScopedSearch::getSearchScopeField()
+                CompositeField::create(
+                    [
+                        ScopedSearch::getSearchKeyField(),
+                        ScopedSearch::getSearchScopeField()
+                    ]
+                )->setTitle(
+                    _t(self::class . '.API_CONFIGURATION', 'API configuration'),
+                )
             ]
         );
         return $fields;
@@ -115,11 +130,13 @@ class TypesenseSearchPage extends \Page {
     /**
      * Handle writing
      */
-    public function onBeforeWrite() {
+    #[\Override]
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
-        if($this->ResultsPerPage > SearchHandler::MAX_PER_PAGE) {
+        if ($this->ResultsPerPage > SearchHandler::MAX_PER_PAGE) {
             $this->ResultsPerPage = SearchHandler::MAX_PER_PAGE;
-        } else if($this->ResultsPerPage <= 0) {
+        } elseif ($this->ResultsPerPage <= 0) {
             $this->ResultsPerPage = SearchHandler::DEFAULT_PER_PAGE;
         }
     }
@@ -127,10 +144,12 @@ class TypesenseSearchPage extends \Page {
     /**
      * Handle post-writing
      */
-    public function onAfterWrite() {
+    #[\Override]
+    public function onAfterWrite()
+    {
         parent::onAfterWrite();
-        if($this->IsGlobalSearch == 1) {
-            DB::prepared_query("UPDATE \"TypesenseSearchPage\" SET IsGlobalSearch = 0 WHERE ID <> ?", [$this->ID]);
+        if ($this->IsGlobalSearch == 1) {
+            DB::prepared_query('UPDATE "TypesenseSearchPage" SET IsGlobalSearch = 0 WHERE ID <> ?', [$this->ID]);
         }
     }
 

@@ -2,7 +2,6 @@
 
 namespace NSWDPC\Typesense\CMS\Extensions;
 
-use DNADesign\Elemental\Extensions\ElementalPageExtension;
 use NSWDPC\Search\Typesense\Traits\TypesenseDefaultFields;
 use NSWDPC\Search\Typesense\Models\TypesenseSearchResult;
 use SilverStripe\AssetAdmin\Forms\UploadField;
@@ -10,16 +9,21 @@ use SilverStripe\Assets\Image;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\FieldType\DBString;
 use SilverStripe\ORM\FieldType\DBHTMLText;
-use SilverStripe\ORM\FieldType\DBText;
 use SilverStripe\TagField\StringTagField;
 
 /**
  * Provides Typesense search result support for the SiteTree data model
+ * @property ?string $SearchResultSubTitle
+ * @property ?string $SearchResultLabel
+ * @property ?string $SearchResultLabels
+ * @property int $SearchResultImageID
+ * @method \SilverStripe\Assets\Image SearchResultImage()
+ * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\CMS\Model\SiteTree & static)>
  */
-class SiteTreeSearchResult extends DataExtension {
-
+class SiteTreeSearchResult extends DataExtension
+{
     use TypesenseDefaultFields;
 
     private static array $db = [
@@ -77,51 +81,40 @@ class SiteTreeSearchResult extends DataExtension {
     /**
      * Create a Typesense search result for indexing
      */
-    public function getTypesenseSearchResult(): TypesenseSearchResult {
+    public function getTypesenseSearchResult(): TypesenseSearchResult
+    {
         $owner = $this->getOwner();
 
         // Allow custom project-level decoration of the search result
         $data = [];
         $owner->extend('beforeGetTypesenseSearchResult', $data);
-        if($data !== []) {
+        // @phpstan-ignore function.alreadyNarrowedType
+        if (!is_array($data)) {
+            throw new \RuntimeException("beforeGetTypesenseSearchResult has modified the search result type. An array is expected.");
+        }
+
+        // @phpstan-ignore notIdentical.alwaysFalse
+        if ($data !== []) {
+            // custom handling: beforeGetTypesenseSearchResult has provided its own result data
             return $data;
         }
 
-        $supportsElemental = class_exists(ElementalPageExtension::class) && $owner->supportsElemental();
-
-        // try to determine the search abstract
-        if($owner->hasMethod('getSearchResultAbstract')) {
-            $abstract = (string)$owner->getSearchResultAbstract();
-        } else if($owner->hasField('Abstract')) {
-            // maybe the model provides a search abstract
-            $abstract = $owner->dbObject('Abstract');
-        } else if($supportsElemental) {
-            // if elemental is supported
-            $abstract = DBField::create_field(
-                DBHTMLText::class,
-                $owner->getElementsForSearch()
-            )->setProcessShortcodes(false)
-            ->FirstSentence();
-        } else {
-            // use the first sentence of the content
-            $content = $owner->dbObject('Content');
-            if($content instanceof DBHTMLText) {
-                $content = $content->setProcessShortcodes(false);
-            }
-            $content = $content->FirstSentence();
-        }
+        // search result abstract
+        $abstract = $this->getTypesenseSearchResultAbstract();
 
         // images, if provided
         $imageURL = '';
         $imageAlt = '';
-        if(($image = $owner->SearchResultImage()) && $image->exists()) {
+        if (($image = $owner->SearchResultImage()) && $image->exists()) {
             $imageURL = $image->Link();
             $imageAlt = $image->hasField('AltText') ? ($image->AltText ?? '') : '';
         }
 
+        /** @var \SilverStripe\ORM\FieldType\DBDatetime $lastEdited */
+        $lastEdited = $owner->dbObject('LastEdited');
         $data = [
             'Title' => $owner->Title ?? '',
-            'Date' => $owner->dbObject('LastEdited')->Format('d MMMM y'),
+            'Date' => $lastEdited->Format('d MMMM y'),
             'Link' => $owner->Link() ?? '',
             'ImageURL' => $imageURL,
             'ImageAlt' => $imageAlt,
@@ -132,8 +125,49 @@ class SiteTreeSearchResult extends DataExtension {
         ];
 
         $owner->extend('afterGetTypesenseSearchResult', $data);
+        // @phpstan-ignore function.alreadyNarrowedType
+        if (!is_array($data)) {
+            throw new \RuntimeException("afterGetTypesenseSearchResult has modified the search result type. An array is expected.");
+        }
 
         return TypesenseSearchResult::create($data);
+    }
+
+    /**
+     * Return a search result abstract
+     * If the owner record provides a method called 'getSearchResultAbstract' this will be called and a string or DBString is the expected return type
+     * Otherwise, an "Abstract" field on the record will be called, followed by the Content field
+     *
+     * For elemental support, see the nswdpc/silverstripe-typesense-elemental module which may override this handling
+     */
+    protected function getTypesenseSearchResultAbstract(): string
+    {
+        $abstract = "";
+        $owner = $this->getOwner();
+        if ($owner->hasMethod('getSearchResultAbstract')) {
+            // @phpstan-ignore method.notFound
+            $abstract = $owner->getSearchResultAbstract();
+        } elseif ($owner->hasField('Abstract')) {
+            // maybe the model provides an abstract field
+            $abstract = $owner->dbObject('Abstract');
+        } else {
+            // use the first sentence of the content
+            $content = $owner->dbObject('Content');
+            if ($content instanceof DBHTMLText) {
+                $content = $content->setProcessShortcodes(false);
+            }
+
+            $abstract = $content->FirstSentence();
+        }
+
+        if (is_string($abstract)) {
+            return $abstract;
+        } elseif ($abstract instanceof DBString) {
+            return $abstract->__toString();
+        } else {
+            // invalid, empty string
+            return "";
+        }
     }
 
 }
