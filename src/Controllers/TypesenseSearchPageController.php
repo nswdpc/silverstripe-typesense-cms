@@ -8,7 +8,7 @@ use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Search\Typesense\Services\FormCreator;
 use NSWDPC\Search\Typesense\Services\Logger;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
-use ElliotSawyer\SilverstripeTypesense\Collection;
+use NSWDPC\Search\Typesense\Models\TypesenseSearchCollection as Collection;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Forms\Form;
 use SilverStripe\ORM\PaginatedList;
