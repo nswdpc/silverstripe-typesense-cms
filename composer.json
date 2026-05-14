@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "dev-dev-stan-modules as 0.2.9999",
+        "nswdpc/silverstripe-search-typesense": "dev-main as 0.2.9999",
         "silverstripe/tagfield": "*",
         "silverstripe/asset-admin": "*",
         "silverstripe/cms": "^5.4"
