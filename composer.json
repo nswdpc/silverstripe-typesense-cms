@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "dev-main as 0.2.9999",
+        "nswdpc/silverstripe-search-typesense": "dev-main",
         "silverstripe/tagfield": "*",
         "silverstripe/asset-admin": "*",
         "silverstripe/cms": "^5.4"
