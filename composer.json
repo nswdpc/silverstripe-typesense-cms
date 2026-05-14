@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "dev-main",
+        "nswdpc/silverstripe-search-typesense": "^0.3",
         "silverstripe/tagfield": "*",
         "silverstripe/asset-admin": "*",
         "silverstripe/cms": "^5.4"
