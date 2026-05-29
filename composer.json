@@ -15,14 +15,8 @@
             "role": "Developer"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://codeberg.org/codemdev/silverstripe-typesense.git"
-        }
-    ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "^0.3",
+        "nswdpc/silverstripe-search-typesense": "dev-feat-decouple-client",
         "silverstripe/tagfield": "*",
         "silverstripe/asset-admin": "*",
         "silverstripe/cms": "^5.4"
