@@ -8,7 +8,7 @@ use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\FieldType\DBString;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\TagField\StringTagField;
@@ -20,9 +20,9 @@ use SilverStripe\TagField\StringTagField;
  * @property ?string $SearchResultLabels
  * @property int $SearchResultImageID
  * @method \SilverStripe\Assets\Image SearchResultImage()
- * @extends \SilverStripe\ORM\DataExtension<(\SilverStripe\CMS\Model\SiteTree & static)>
+ * @extends \SilverStripe\Core\Extension<(\SilverStripe\CMS\Model\SiteTree & static)>
  */
-class SiteTreeSearchResult extends DataExtension
+class SiteTreeSearchResult extends Extension
 {
     use TypesenseDefaultFields;
 
