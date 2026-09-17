@@ -119,6 +119,7 @@ class TypesenseSearchPageTest extends SapphireTest
     {
         $collectionA = Collection::create(['Name' => 'Zeta']);
         $collectionA->write();
+
         $collectionB = Collection::create(['Name' => 'Alpha']);
         $collectionB->write();
 

@@ -38,12 +38,10 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     private function makePage(array $fields = []): TypesenseSearchPage
     {
-        $page = TypesenseSearchPage::create(array_merge([
+        return TypesenseSearchPage::create(array_merge([
             'Title' => 'Search',
             'URLSegment' => 'search',
         ], $fields));
-
-        return $page;
     }
 
     private function makeRequest(array $getVars): HTTPRequest
@@ -56,7 +54,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexWithNoQueryRendersWithoutSearching(): void
     {
-        $controller = new TypesenseSearchPageController($this->makePage());
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
         $response = $controller->index($this->makeRequest([]));
 
         $this->assertStringContainsString('No results', (string) $response);
@@ -64,7 +62,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexRedirectsLegacySearchVarToQ(): void
     {
-        $controller = new TypesenseSearchPageController($this->makePage());
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
         $response = $controller->index($this->makeRequest(['Search' => 'hello']));
 
         $location = $response->getHeader('Location');
@@ -74,7 +72,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexRedirectPreservesOtherQueryVars(): void
     {
-        $controller = new TypesenseSearchPageController($this->makePage());
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
         $response = $controller->index($this->makeRequest(['Search' => 'hello', 'foo' => 'bar']));
 
         $location = $response->getHeader('Location');
@@ -92,7 +90,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
             'SearchScope' => '{not valid json',
         ]);
 
-        $controller = new TypesenseSearchPageController($page);
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
         $response = $controller->index($this->makeRequest(['q' => 'term']));
 
         // Renders without a fatal error, with no results
@@ -107,7 +105,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
         $page = $this->makePage(['CollectionID' => $collection->ID]);
 
-        $controller = new TypesenseSearchPageController($page);
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
         $response = $controller->index($this->makeRequest(['q' => 'term']));
 
         // No TYPESENSE_SERVER configured means the Typesense client itself refuses to
@@ -130,7 +128,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
         $page = $this->makePage(['CollectionID' => $collection->ID]);
 
-        $controller = new TypesenseSearchPageController($page);
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
         $response = $controller->index($this->makeRequest(['q' => 'term']));
 
         $this->assertStringContainsString('No results', (string) $response);
@@ -139,7 +137,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testDoSearchStripsTagsAndEncodesTermInRedirect(): void
     {
-        $controller = new TypesenseSearchPageController($this->makePage());
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
         $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
 
         $response = $controller->doSearch(['Search' => '<b>hello</b> & world'], $form);
@@ -152,7 +150,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testDoSearchDefaultsToEmptyStringWhenSearchMissing(): void
     {
-        $controller = new TypesenseSearchPageController($this->makePage());
+        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
         $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
 
         $response = $controller->doSearch([], $form);

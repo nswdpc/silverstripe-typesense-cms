@@ -159,15 +159,15 @@ class SiteTreeSearchResult extends DataExtension
 
             $abstract = $content->FirstSentence();
         }
-
         if (is_string($abstract)) {
             return $abstract;
-        } elseif ($abstract instanceof DBString) {
-            return $abstract->__toString();
-        } else {
-            // invalid, empty string
-            return "";
         }
+
+        if ($abstract instanceof DBString) {
+            return $abstract->__toString();
+        }
+        // invalid, empty string
+        return "";
     }
 
 }

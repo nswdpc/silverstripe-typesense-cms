@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NSWDPC\Typesense\CMS\Tests\TestOnly;
 
 use Page;

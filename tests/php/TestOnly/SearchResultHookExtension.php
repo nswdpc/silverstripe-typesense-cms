@@ -11,6 +11,7 @@ use SilverStripe\ORM\DataExtension;
  *
  * Set the static properties before calling getTypesenseSearchResult() on an owner that has this
  * extension applied, and call reset() in tearDown() so behaviour does not leak between tests.
+ * @extends \SilverStripe\ORM\DataExtension<static>
  */
 class SearchResultHookExtension extends DataExtension implements TestOnly
 {

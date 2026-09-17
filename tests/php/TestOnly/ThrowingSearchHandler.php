@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NSWDPC\Typesense\CMS\Tests\TestOnly;
 
 use NSWDPC\Search\Typesense\Models\SearchResults;
@@ -19,7 +21,7 @@ class ThrowingSearchHandler extends SearchHandler implements TestOnly
     #[\Override]
     public function doSearch(Collection $collection, array|string $searchQuery, int $pageStart = 0, int $perPage = 10, array $searchScope = [], string $searchOnlyApiKey = ''): ?SearchResults
     {
-        if (static::$exceptionToThrow !== null) {
+        if (static::$exceptionToThrow instanceof \Throwable) {
             throw static::$exceptionToThrow;
         }
 
