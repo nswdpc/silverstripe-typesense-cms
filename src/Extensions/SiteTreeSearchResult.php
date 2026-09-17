@@ -96,7 +96,7 @@ class SiteTreeSearchResult extends DataExtension
         // @phpstan-ignore notIdentical.alwaysFalse
         if ($data !== []) {
             // custom handling: beforeGetTypesenseSearchResult has provided its own result data
-            return $data;
+            return TypesenseSearchResult::create($data);
         }
 
         // search result abstract
