@@ -55,7 +55,7 @@ class TypesenseSearchPageController extends \PageController
     {
         $term = $data['Search'] ?? '';
         $term = strip_tags(trim((string)$term));
-        return $this->redirect($this->Link('?q=' . $term));
+        return $this->redirect($this->Link('?' . http_build_query(['q' => $term])));
     }
 
     /**
