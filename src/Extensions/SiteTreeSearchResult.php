@@ -121,7 +121,7 @@ class SiteTreeSearchResult extends DataExtension
             'Label' => $owner->SearchResultLabel ?? '',
             'Labels' => explode(",", $owner->SearchResultLabels ?? ''),
             'Abstract' => strip_tags(trim($abstract)),
-            'Info' => $this->SearchResultSubTitle ?? ''
+            'Info' => $owner->SearchResultSubTitle ?? ''
         ];
 
         $owner->extend('afterGetTypesenseSearchResult', $data);
