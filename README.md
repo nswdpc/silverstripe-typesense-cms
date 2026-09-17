@@ -4,23 +4,24 @@ Provides a page and a controller with a form to handle a search and display the 
 
 ### Usage
 
-
-## Requirements
-
+1. [Documentation](./docs/en/001_index.md)
+1. Create a search page
+1. Configure the page on the Typesense tab
+1. Save / publish
 
 ## Installation
 
+```sh
+composer require nswdpc/silverstripe-typesense-cms
+```
 
 ## License
 
 [BSD-3-Clause](./LICENSE.md)
 
-## Documentation
-
-* [Documentation](./docs/en/001_index.md)
-
 ## Configuration
 
+This module relies on a functional Typesense search server setup.
 
 ## Maintainers
 

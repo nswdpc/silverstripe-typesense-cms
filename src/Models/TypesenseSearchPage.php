@@ -2,7 +2,7 @@
 
 namespace NSWDPC\Typesense\CMS\Models;
 
-use ElliotSawyer\SilverstripeTypesense\Collection;
+use NSWDPC\Search\Typesense\Models\TypesenseSearchCollection as Collection;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
 use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
@@ -18,7 +18,7 @@ use SilverStripe\ORM\DB;
  * @property bool $IsGlobalSearch
  * @property int $ResultsPerPage
  * @property int $CollectionID
- * @method \ElliotSawyer\SilverstripeTypesense\Collection Collection()
+ * @method \NSWDPC\Search\Typesense\Models\TypesenseSearchCollection Collection()
  * @mixin \NSWDPC\Search\Typesense\Extensions\ScopedSearchExtension
  */
 class TypesenseSearchPage extends \Page
