@@ -87,7 +87,7 @@ class TypesenseSearchPageController extends \PageController
             try {
                 $handler = SearchHandler::create('start');
                 $perPage = $model->ResultsPerPage ?? SearchHandler::DEFAULT_PER_PAGE;
-                $pageStart = $request->getVar($handler->getStartVarName()) ?? 0;
+                $pageStart = abs((int) $request->getVar($handler->getStartVarName()) ?? 0);
                 // an option search scope, provided as JSON
                 $searchScope = ScopedSearch::getDecodedSearchScope($model->SearchScope ?? '');
                 if (!is_array($searchScope)) {
