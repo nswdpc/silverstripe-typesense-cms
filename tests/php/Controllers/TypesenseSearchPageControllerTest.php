@@ -4,7 +4,6 @@ namespace NSWDPC\Typesense\CMS\Tests\Controllers;
 
 use NSWDPC\Search\Typesense\Models\TypesenseSearchCollection as Collection;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
-use NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController;
 use NSWDPC\Typesense\CMS\Models\TypesenseSearchPage;
 use NSWDPC\Typesense\CMS\Tests\TestOnly\SpyLogger;
 use NSWDPC\Typesense\CMS\Tests\TestOnly\ThrowingSearchHandler;
