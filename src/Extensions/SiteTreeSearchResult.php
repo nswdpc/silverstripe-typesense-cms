@@ -159,6 +159,7 @@ class SiteTreeSearchResult extends DataExtension
 
             $abstract = $content->FirstSentence();
         }
+
         if (is_string($abstract)) {
             return $abstract;
         }
@@ -166,6 +167,7 @@ class SiteTreeSearchResult extends DataExtension
         if ($abstract instanceof DBString) {
             return $abstract->__toString();
         }
+
         // invalid, empty string
         return "";
     }
