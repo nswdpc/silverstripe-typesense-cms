@@ -31,8 +31,8 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
         // Ensure a consistent "no Typesense server configured" baseline for every test in this file,
         // regardless of the host environment's own env vars.
-        Environment::setEnv('TYPESENSE_SERVER', null);
-        Environment::setEnv('TYPESENSE_API_KEY', null);
+        Environment::setEnv('TYPESENSE_SERVER', '');
+        Environment::setEnv('TYPESENSE_API_KEY', '');
     }
 
     private function makePage(array $fields = []): TypesenseSearchPage
