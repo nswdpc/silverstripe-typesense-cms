@@ -138,7 +138,7 @@ class TypesenseSearchPageTest extends SapphireTest
         $collectionField = $fields->dataFieldByName('CollectionID');
         $this->assertInstanceOf(DropdownField::class, $collectionField);
         $source = $collectionField->getSource();
-        $names = is_array($source) ? array_values($source) : array_values($source->toArray());
+        $names = array_values($source);
         $this->assertSame(['Alpha', 'Zeta'], $names, 'Collections should be sorted by name');
     }
 }
