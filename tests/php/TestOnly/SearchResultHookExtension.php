@@ -3,7 +3,7 @@
 namespace NSWDPC\Typesense\CMS\Tests\TestOnly;
 
 use SilverStripe\Dev\TestOnly;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
 /**
  * Test double for the beforeGetTypesenseSearchResult / afterGetTypesenseSearchResult extension points
@@ -11,9 +11,9 @@ use SilverStripe\ORM\DataExtension;
  *
  * Set the static properties before calling getTypesenseSearchResult() on an owner that has this
  * extension applied, and call reset() in tearDown() so behaviour does not leak between tests.
- * @extends \SilverStripe\ORM\DataExtension<static>
+ * @extends \SilverStripe\Core\Extension<static>
  */
-class SearchResultHookExtension extends DataExtension implements TestOnly
+class SearchResultHookExtension extends Extension implements TestOnly
 {
     /**
      * When set, beforeGetTypesenseSearchResult() replaces $data with this array (short-circuiting the
