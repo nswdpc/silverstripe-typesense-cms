@@ -1,6 +1,6 @@
 <?php
 
-namespace NSWDPC\Typesense\CMS\Tests\TestOnly;
+namespace NSWDPC\Typesense\CMS\Tests\Helpers;
 
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\Core\Extension;

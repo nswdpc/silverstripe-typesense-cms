@@ -44,8 +44,8 @@
             ]
         },
         "classmap": [
-            "tests/php/TestOnly/Page.php",
-            "tests/php/TestOnly/PageController.php"
+            "tests/php/Stubs/Page.php",
+            "tests/php/Stubs/PageController.php"
         ]
     },
     "scripts": {

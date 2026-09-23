@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NSWDPC\Typesense\CMS\Tests\TestOnly;
+namespace NSWDPC\Typesense\CMS\Tests\Helpers;
 
 use NSWDPC\Search\Typesense\Models\SearchResults;
 use NSWDPC\Search\Typesense\Models\TypesenseSearchCollection as Collection;

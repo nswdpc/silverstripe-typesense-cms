@@ -1,6 +1,6 @@
 <?php
 
-namespace NSWDPC\Typesense\CMS\Tests\TestOnly;
+namespace NSWDPC\Typesense\CMS\Tests\Helpers;
 
 use Psr\Log\AbstractLogger;
 use SilverStripe\Dev\TestOnly;

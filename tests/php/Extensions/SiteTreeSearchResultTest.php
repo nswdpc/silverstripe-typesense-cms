@@ -3,10 +3,10 @@
 namespace NSWDPC\Typesense\CMS\Tests\Extensions;
 
 use NSWDPC\Search\Typesense\Models\TypesenseSearchResult;
-use NSWDPC\Typesense\CMS\Tests\TestOnly\PageWithAbstractField;
-use NSWDPC\Typesense\CMS\Tests\TestOnly\PageWithAbstractMethod;
-use NSWDPC\Typesense\CMS\Tests\TestOnly\PageWithSearchResultHooks;
-use NSWDPC\Typesense\CMS\Tests\TestOnly\SearchResultHookExtension;
+use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithAbstractField;
+use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithAbstractMethod;
+use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithSearchResultHooks;
+use NSWDPC\Typesense\CMS\Tests\Helpers\SearchResultHookExtension;
 use Page;
 use SilverStripe\Assets\Image;
 use SilverStripe\Dev\SapphireTest;
