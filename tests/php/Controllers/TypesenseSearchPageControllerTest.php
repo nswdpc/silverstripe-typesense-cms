@@ -43,6 +43,12 @@ class TypesenseSearchPageControllerTest extends SapphireTest
         ], $fields));
     }
 
+    protected function getTestThemePath(): string
+    {
+        $path = realpath(__DIR__ . '/../');
+        return is_string($path) ? $path : '';
+    }
+
     private function makeRequest(array $getVars): HTTPRequest
     {
         $request = new HTTPRequest('GET', '/', $getVars);
@@ -53,107 +59,122 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexWithNoQueryRendersWithoutSearching(): void
     {
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
-        $response = $controller->index($this->makeRequest([]));
-
-        $this->assertStringContainsString('No results', (string) $response);
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
+            $response = $controller->index($this->makeRequest([]));
+            $this->assertStringContainsString('TEST NO RESULTS', (string) $response);
+        });
     }
 
     public function testIndexRedirectsLegacySearchVarToQ(): void
     {
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
-        $response = $controller->index($this->makeRequest(['Search' => 'hello']));
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
+            $response = $controller->index($this->makeRequest(['Search' => 'hello']));
 
-        $location = $response->getHeader('Location');
-        $this->assertStringContainsString('q=hello', $location);
-        $this->assertStringNotContainsString('Search=', $location);
+            $location = $response->getHeader('Location');
+            $this->assertStringContainsString('q=hello', $location);
+            $this->assertStringNotContainsString('Search=', $location);
+        });
     }
 
     public function testIndexRedirectPreservesOtherQueryVars(): void
     {
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
-        $response = $controller->index($this->makeRequest(['Search' => 'hello', 'foo' => 'bar']));
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
+            $response = $controller->index($this->makeRequest(['Search' => 'hello', 'foo' => 'bar']));
 
-        $location = $response->getHeader('Location');
-        $this->assertStringContainsString('q=hello', $location);
-        $this->assertStringContainsString('foo=bar', $location);
+            $location = $response->getHeader('Location');
+            $this->assertStringContainsString('q=hello', $location);
+            $this->assertStringContainsString('foo=bar', $location);
+        });
     }
 
     public function testIndexCatchesJsonExceptionFromInvalidSearchScope(): void
     {
-        $collection = Collection::create(['Name' => 'Test collection']);
-        $collection->write();
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $collection = Collection::create(['Name' => 'Test collection']);
+            $collection->write();
 
-        $page = $this->makePage([
-            'CollectionID' => $collection->ID,
-            'SearchScope' => '{not valid json',
-        ]);
+            $page = $this->makePage([
+                'CollectionID' => $collection->ID,
+                'SearchScope' => '{not valid json',
+            ]);
 
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
-        $response = $controller->index($this->makeRequest(['q' => 'term']));
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
+            $response = $controller->index($this->makeRequest(['q' => 'term']));
 
-        // Renders without a fatal error, with no results
-        $this->assertStringContainsString('No results', (string) $response);
-        $this->assertTrue($this->logger->hasMessageContaining('JsonException'), 'Expected a JsonException to be logged');
+            // Renders without a fatal error, with no results
+            $this->assertStringContainsString('TEST NO RESULTS', (string) $response);
+            $this->assertTrue($this->logger->hasMessageContaining('JsonException'), 'Expected a JsonException to be logged');
+        });
     }
 
     public function testIndexCatchesTypesenseClientErrorWhenServerNotConfigured(): void
     {
-        $collection = Collection::create(['Name' => 'Test collection']);
-        $collection->write();
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $collection = Collection::create(['Name' => 'Test collection']);
+            $collection->write();
 
-        $page = $this->makePage(['CollectionID' => $collection->ID]);
+            $page = $this->makePage(['CollectionID' => $collection->ID]);
 
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
-        $response = $controller->index($this->makeRequest(['q' => 'term']));
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
+            $response = $controller->index($this->makeRequest(['q' => 'term']));
 
-        // No TYPESENSE_SERVER configured means the Typesense client itself refuses to
-        // build (ConfigError, a TypesenseClientError) rather than attempting a network call.
-        $this->assertStringContainsString('No results', (string) $response);
-        $this->assertTrue($this->logger->hasMessageContaining('TypesenseClientError'), 'Expected a TypesenseClientError to be logged');
+            // No TYPESENSE_SERVER configured means the Typesense client itself refuses to
+            // build (ConfigError, a TypesenseClientError) rather than attempting a network call.
+            $this->assertStringContainsString('TEST NO RESULTS', (string) $response);
+            $this->assertTrue($this->logger->hasMessageContaining('TypesenseClientError'), 'Expected a TypesenseClientError to be logged');
+        });
     }
 
     public function testIndexCatchesGenericExceptionFromSearchHandler(): void
     {
-        Injector::inst()->load([
-            SearchHandler::class => [
-                'class' => ThrowingSearchHandler::class,
-            ],
-        ]);
-        ThrowingSearchHandler::$exceptionToThrow = new \RuntimeException('boom');
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            Injector::inst()->load([
+                SearchHandler::class => [
+                    'class' => ThrowingSearchHandler::class,
+                ],
+            ]);
+            ThrowingSearchHandler::$exceptionToThrow = new \RuntimeException('boom');
 
-        $collection = Collection::create(['Name' => 'Test collection']);
-        $collection->write();
+            $collection = Collection::create(['Name' => 'Test collection']);
+            $collection->write();
 
-        $page = $this->makePage(['CollectionID' => $collection->ID]);
+            $page = $this->makePage(['CollectionID' => $collection->ID]);
 
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
-        $response = $controller->index($this->makeRequest(['q' => 'term']));
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($page);
+            $response = $controller->index($this->makeRequest(['q' => 'term']));
 
-        $this->assertStringContainsString('No results', (string) $response);
-        $this->assertTrue($this->logger->hasMessageContaining('boom'), 'Expected the generic exception message to be logged');
+            $this->assertStringContainsString('TEST NO RESULTS', (string) $response);
+            $this->assertTrue($this->logger->hasMessageContaining('boom'), 'Expected the generic exception message to be logged');
+        });
     }
 
     public function testDoSearchStripsTagsAndEncodesTermInRedirect(): void
     {
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
-        $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
+            $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
 
-        $response = $controller->doSearch(['Search' => '<b>hello</b> & world'], $form);
+            $response = $controller->doSearch(['Search' => '<b>hello</b> & world'], $form);
 
-        $location = $response->getHeader('Location');
-        $this->assertStringContainsString('q=' . urlencode('hello & world'), $location);
-        // Regression check: the term must not split into extra query params
-        $this->assertStringNotContainsString('world=', $location);
+            $location = $response->getHeader('Location');
+            $this->assertStringContainsString('q=' . urlencode('hello & world'), $location);
+            // Regression check: the term must not split into extra query params
+            $this->assertStringNotContainsString('world=', $location);
+        });
     }
 
     public function testDoSearchDefaultsToEmptyStringWhenSearchMissing(): void
     {
-        $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
-        $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+            $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
+            $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
 
-        $response = $controller->doSearch([], $form);
+            $response = $controller->doSearch([], $form);
 
-        $this->assertStringContainsString('q=', $response->getHeader('Location'));
+            $this->assertStringContainsString('q=', $response->getHeader('Location'));
+        });
     }
 }
