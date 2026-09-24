@@ -4,6 +4,7 @@ namespace NSWDPC\Typesense\CMS\Tests\Extensions;
 
 use NSWDPC\Search\Typesense\Models\TypesenseSearchResult;
 use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithAbstractField;
+use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithNoAbstractField;
 use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithAbstractMethod;
 use NSWDPC\Typesense\CMS\Tests\Helpers\PageWithSearchResultHooks;
 use NSWDPC\Typesense\CMS\Tests\Helpers\SearchResultHookExtension;
@@ -19,6 +20,7 @@ class SiteTreeSearchResultTest extends SapphireTest
     // TestOnly page subclasses below need to be listed here.
     protected static $extra_dataobjects = [
         PageWithAbstractField::class,
+        PageWithNoAbstractField::class,
         PageWithAbstractMethod::class,
         PageWithSearchResultHooks::class,
     ];
@@ -31,8 +33,8 @@ class SiteTreeSearchResultTest extends SapphireTest
 
     public function testAbstractFallsBackToContentFirstSentenceByDefault(): void
     {
-        $page = Page::create([
-            'Title' => 'Default abstract page',
+        $page = PageWithNoAbstractField::create([
+            'Title' => 'Default no abstract page',
             'Content' => '<p>First sentence here. Second sentence here.</p>',
         ]);
         $page->write();
