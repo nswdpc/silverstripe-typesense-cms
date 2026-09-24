@@ -96,7 +96,7 @@ class SiteTreeSearchResult extends DataExtension
         // @phpstan-ignore notIdentical.alwaysFalse
         if ($data !== []) {
             // custom handling: beforeGetTypesenseSearchResult has provided its own result data
-            return $data;
+            return TypesenseSearchResult::create($data);
         }
 
         // search result abstract
@@ -121,7 +121,7 @@ class SiteTreeSearchResult extends DataExtension
             'Label' => $owner->SearchResultLabel ?? '',
             'Labels' => explode(",", $owner->SearchResultLabels ?? ''),
             'Abstract' => strip_tags(trim($abstract)),
-            'Info' => $this->SearchResultSubTitle ?? ''
+            'Info' => $owner->SearchResultSubTitle ?? ''
         ];
 
         $owner->extend('afterGetTypesenseSearchResult', $data);
@@ -162,12 +162,14 @@ class SiteTreeSearchResult extends DataExtension
 
         if (is_string($abstract)) {
             return $abstract;
-        } elseif ($abstract instanceof DBString) {
-            return $abstract->__toString();
-        } else {
-            // invalid, empty string
-            return "";
         }
+
+        if ($abstract instanceof DBString) {
+            return $abstract->__toString();
+        }
+
+        // invalid, empty string
+        return "";
     }
 
 }

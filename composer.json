@@ -15,16 +15,10 @@
             "role": "Developer"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://codeberg.org/codemdev/silverstripe-typesense.git"
-        }
-    ],
     "require": {
-        "nswdpc/silverstripe-search-typesense": "^0.3",
-        "silverstripe/tagfield": "*",
-        "silverstripe/asset-admin": "*",
+        "nswdpc/silverstripe-search-typesense": "^0.4",
+        "silverstripe/tagfield": "^3.4",
+        "silverstripe/asset-admin": "^2.4",
         "silverstripe/cms": "^5.4"
     },
     "require-dev": {
@@ -43,11 +37,18 @@
             ]
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "NSWDPC\\Typesense\\CMS\\Tests\\": [
+                "tests/php/"
+            ]
+        }
+    },
     "scripts": {
-        "phpstan-analyse": "./vendor/bin/phpstan analyse --ansi --no-progress --no-interaction --configuration vendor/nswdpc/ci-files/phpstan/.phpstan.silverstripe.neon src/",
-        "rector-dryrun": "./vendor/bin/rector process --dry-run --ansi --config vendor/nswdpc/ci-files/rector/.rector.silverstripe_53_83.php src/",
-        "rector-process": "./vendor/bin/rector process --no-diffs --ansi --config vendor/nswdpc/ci-files/rector/.rector.silverstripe_53_83.php src/",
-        "phpcsfixer-fix": "./vendor/bin/php-cs-fixer fix --ansi --no-interaction --config vendor/nswdpc/ci-files/php-cs-fixer/.php-cs-fixer.php src/"
+        "phpstan-analyse": "./vendor/bin/phpstan analyse --ansi --no-progress --no-interaction --configuration vendor/nswdpc/ci-files/phpstan/.phpstan.silverstripe.neon src/ tests/",
+        "rector-dryrun": "./vendor/bin/rector process --dry-run --ansi --config vendor/nswdpc/ci-files/rector/.rector.silverstripe_53_83.php src/ tests/",
+        "rector-process": "./vendor/bin/rector process --no-diffs --ansi --config vendor/nswdpc/ci-files/rector/.rector.silverstripe_53_83.php src/ tests/",
+        "phpcsfixer-fix": "./vendor/bin/php-cs-fixer fix --ansi --no-interaction --config vendor/nswdpc/ci-files/php-cs-fixer/.php-cs-fixer.php src/ tests/"
     },
     "config": {
         "allow-plugins": {
