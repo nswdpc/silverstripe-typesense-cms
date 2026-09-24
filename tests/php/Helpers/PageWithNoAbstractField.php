@@ -18,7 +18,7 @@ class PageWithNoAbstractField extends Page implements TestOnly
     public function hasField($field)
     {
 
-        if($field == "Abstract") {
+        if ($field == "Abstract") {
             return false;
         }
 
