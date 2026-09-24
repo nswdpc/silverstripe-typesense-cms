@@ -42,11 +42,7 @@
             "NSWDPC\\Typesense\\CMS\\Tests\\": [
                 "tests/php/"
             ]
-        },
-        "classmap": [
-            "tests/php/Stubs/Page.php",
-            "tests/php/Stubs/PageController.php"
-        ]
+        }
     },
     "scripts": {
         "phpstan-analyse": "./vendor/bin/phpstan analyse --ansi --no-progress --no-interaction --configuration vendor/nswdpc/ci-files/phpstan/.phpstan.silverstripe.neon src/ tests/",
