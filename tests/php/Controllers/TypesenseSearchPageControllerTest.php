@@ -59,7 +59,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexWithNoQueryRendersWithoutSearching(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
             $response = $controller->index($this->makeRequest([]));
             $this->assertStringContainsString('TEST NO RESULTS', (string) $response);
@@ -68,7 +68,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexRedirectsLegacySearchVarToQ(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
             $response = $controller->index($this->makeRequest(['Search' => 'hello']));
 
@@ -80,7 +80,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexRedirectPreservesOtherQueryVars(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
             $response = $controller->index($this->makeRequest(['Search' => 'hello', 'foo' => 'bar']));
 
@@ -92,7 +92,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexCatchesJsonExceptionFromInvalidSearchScope(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $collection = Collection::create(['Name' => 'Test collection']);
             $collection->write();
 
@@ -112,7 +112,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexCatchesTypesenseClientErrorWhenServerNotConfigured(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $collection = Collection::create(['Name' => 'Test collection']);
             $collection->write();
 
@@ -130,7 +130,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testIndexCatchesGenericExceptionFromSearchHandler(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             Injector::inst()->load([
                 SearchHandler::class => [
                     'class' => ThrowingSearchHandler::class,
@@ -153,7 +153,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testDoSearchStripsTagsAndEncodesTermInRedirect(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
             $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
 
@@ -168,7 +168,7 @@ class TypesenseSearchPageControllerTest extends SapphireTest
 
     public function testDoSearchDefaultsToEmptyStringWhenSearchMissing(): void
     {
-        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function () {
+        $this->useTestTheme($this->getTestThemePath(), 'testtheme', function (): void {
             $controller = \NSWDPC\Typesense\CMS\Controllers\TypesenseSearchPageController::create($this->makePage());
             $form = Form::create($controller, 'SearchForm', FieldList::create(), FieldList::create());
 
