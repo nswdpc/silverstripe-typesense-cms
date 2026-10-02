@@ -8,7 +8,7 @@ use NSWDPC\Search\Typesense\Services\ScopedSearch;
 use NSWDPC\Search\Typesense\Services\FormCreator;
 use NSWDPC\Search\Typesense\Services\Logger;
 use NSWDPC\Search\Typesense\Services\SearchHandler;
-use ElliotSawyer\SilverstripeTypesense\Collection;
+use NSWDPC\Search\Typesense\Models\TypesenseSearchCollection as Collection;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Forms\Form;
 use SilverStripe\ORM\PaginatedList;
@@ -55,7 +55,7 @@ class TypesenseSearchPageController extends \PageController
     {
         $term = $data['Search'] ?? '';
         $term = strip_tags(trim((string)$term));
-        return $this->redirect($this->Link('?q=' . $term));
+        return $this->redirect($this->Link('?' . http_build_query(['q' => $term])));
     }
 
     /**
@@ -87,7 +87,7 @@ class TypesenseSearchPageController extends \PageController
             try {
                 $handler = SearchHandler::create('start');
                 $perPage = $model->ResultsPerPage ?? SearchHandler::DEFAULT_PER_PAGE;
-                $pageStart = $request->getVar($handler->getStartVarName()) ?? 0;
+                $pageStart = abs((int) $request->getVar($handler->getStartVarName()));
                 // an option search scope, provided as JSON
                 $searchScope = ScopedSearch::getDecodedSearchScope($model->SearchScope ?? '');
                 if (!is_array($searchScope)) {
