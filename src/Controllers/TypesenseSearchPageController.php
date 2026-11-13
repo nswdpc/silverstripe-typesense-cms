@@ -11,8 +11,8 @@ use NSWDPC\Search\Typesense\Services\SearchHandler;
 use NSWDPC\Search\Typesense\Models\TypesenseSearchCollection as Collection;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Forms\Form;
-use SilverStripe\ORM\PaginatedList;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\List\PaginatedList;
+use SilverStripe\Model\ArrayData;
 
 /**
  * Typesense search page controller

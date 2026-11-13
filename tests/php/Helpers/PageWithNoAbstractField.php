@@ -15,10 +15,10 @@ class PageWithNoAbstractField extends Page implements TestOnly
 {
     private static string $table_name = 'NSWDPC_Tests_PageWithNoAbstractField';
 
-    public function hasField($field)
+    public function hasField(string $field): bool
     {
 
-        if ($field == "Abstract") {
+        if ($field === "Abstract") {
             return false;
         }
 
